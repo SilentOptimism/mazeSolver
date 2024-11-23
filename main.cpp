@@ -28,7 +28,7 @@ private:
         {1, 1, 1, 1, 1, 1, 0, 0, 0, 1}}};
 
     array<int,2> maze_start = {0,0};
-    array<int,2> maze_end = {9,8};
+    array<int,2> maze_end = {8,9};
 
     stack<array<int,2>> current_position;
     
@@ -46,28 +46,56 @@ public:
         int row = current_position.top().at(0);
         int column = current_position.top().at(1) - 1;
 
-        if(is_valid_pos(row, column))   {current_position.push({row,column});}
+        if(is_valid_pos(row, column)){
+            maze[current_position.top()[0]][current_position.top()[1]] = 0; // Relabels current positon as path
+            current_position.push({row,column});
+            maze[current_position.top()[0]][current_position.top()[1]] = 8; // Labels new position as player
+        }
+        else{cout << "Invalid Position" << endl;}
+        print_maze();
     };
+    void move_right(){
+        int row = current_position.top().at(0);
+        int column = current_position.top().at(1) + 1;
 
-    void move_right(){};
-
+        if(is_valid_pos(row, column)){
+            maze[current_position.top()[0]][current_position.top()[1]] = 0; // Relabels current positon as path
+            current_position.push({row,column});
+            maze[current_position.top()[0]][current_position.top()[1]] = 8; // Labels new position as player
+        }
+        else{cout << "Invalid Position" << endl;}
+        print_maze();
+    };
     void move_down(){
         int row = current_position.top().at(0) + 1;
         int column = current_position.top().at(1);
 
         if(is_valid_pos(row, column)){
-            maze[current_position.top()[0]][current_position.top()[1]] = 0;
+            maze[current_position.top()[0]][current_position.top()[1]] = 0; // Relabels current position as path
             current_position.push({row,column});
-            maze[current_position.top()[0]][current_position.top()[1]] = 8;
+            maze[current_position.top()[0]][current_position.top()[1]] = 8; // Labels new position as player
         }
         else{cout << "Invalid Position" << endl;}
         print_maze();
     };
+    void move_up(){
+        int row = current_position.top().at(0) - 1;
+        int column = current_position.top().at(1);
 
-    void move_up(){};
-    void undo(){
+        if(is_valid_pos(row, column)){
+            maze[current_position.top()[0]][current_position.top()[1]] = 0; // Relabels current positon as path
+            current_position.push({row,column});
+            maze[current_position.top()[0]][current_position.top()[1]] = 8; // Labels new position as player
+        }
+        else{cout << "Invalid Position" << endl;}
+        print_maze();
 
     };
+    
+    void undo(){
+        current_position.pop();
+    };
+    
 
     bool is_valid_pos(int row, int column){
         // Checks if in bounds of maze
@@ -80,6 +108,15 @@ public:
         return !maze[row][column];
     }
 
+    bool win(){
+        if(current_position.top().at(0) == maze_end.at(0))
+            if(current_position.top().at(1) == maze_end.at(1)){
+                cout << "YOU WIN BIG" << endl;
+                return true;
+            }
+        return false;
+    }
+
     MazeGame(){
         current_position.push(maze_start);
         maze.at(maze_start[0]).at(maze_start[1]) = 8;
@@ -88,32 +125,34 @@ public:
 };
 
 
-
-
-
-
-
-
-/*
-void print_position(){
-    cout << "(" << position.at(0) << "," << position.at(1) << ")" << endl;
-}
-
-// Returns true if maze point is zero, Returns false if maze point is true
-bool is_valid_pos(array<int,2> position){
-    return !maze[position[0]][position[1]];
-}
-
-
-
-*/
-
 int main(int argc, char const *argv[])
 {
     MazeGame start = MazeGame();
     start.print_maze();
-    cout << endl;
-    start.move_down();
+
+    while(!start.win()){
+        char user;
+        cout << "UP:w | DOWN:s | LEFT:a | RIGHT:d | UNDO: u" << endl;
+        std::cin >> user;
+
+        switch (user)
+        {
+        case 'w':
+            start.move_up();
+            break;
+        case 's':
+            start.move_down();
+            break;
+        case 'a':
+            start.move_left();
+            break;
+        case 'd':
+            start.move_right();
+            break;
+        default:
+            break;
+        }
+    }
 
 
     return 0;
