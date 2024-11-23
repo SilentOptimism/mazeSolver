@@ -8,6 +8,7 @@ using std::array;
 #include <stack>
 using std::stack;
 
+
 const int row_count = 10;
 const int column_count = 10;
 
@@ -34,6 +35,7 @@ private:
     
 public:
     void print_maze(){
+        system("clear");
         for(array<int,10>& row : maze){
             for(int element: row){
                 cout << element << " ";}
@@ -93,10 +95,14 @@ public:
     };
     
     void undo(){
-        current_position.pop();
+        if(current_position.size() != 1){
+            maze[current_position.top()[0]][current_position.top()[1]] = 0;
+            current_position.pop();
+            maze[current_position.top()[0]][current_position.top()[1]] = 8;
+        }
+        print_maze();
     };
     
-
     bool is_valid_pos(int row, int column){
         // Checks if in bounds of maze
         if(row >= row_count){return false;}
@@ -149,7 +155,11 @@ int main(int argc, char const *argv[])
         case 'd':
             start.move_right();
             break;
+        case 'u':
+            start.undo();
+            break;
         default:
+            cout << "Invalid input" << endl;
             break;
         }
     }
